@@ -1,29 +1,36 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const config = require('./config');
 
 // Connect to MongoDB
-const mongoose = require('mongoose');
-const config = require('./config')
 mongoose.connect(config.mongoURI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-var app = express();
+const app = express();
+
+// Middleware
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
+// Routes
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 
-
-app.listen(process.env.port || 3000)
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 module.exports = app;
