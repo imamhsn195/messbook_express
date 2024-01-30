@@ -1,7 +1,6 @@
 const User = require('../models/User');
 
 const createUser = async (req, res) => {
-    console.dir(req.body);
     try {
         const user = await User.create(req.body);
         res.status(200).json({ message: "User created successfully.", data: user});
