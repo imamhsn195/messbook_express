@@ -24,8 +24,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const diariesRouter = require('./routes/diaries');
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/diaries', diariesRouter);
 
 // Start the server
 const PORT = process.env.PORT || 3000;
