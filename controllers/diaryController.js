@@ -3,7 +3,8 @@ const Diary = require('../models/Diary');
 const createDiary = async (req, res) => {
     try {
         const diary = await Diary.create(req.body);
-        res.status(200).json({ message: "Diary created successfully.", data: diary});
+        await diary.populate('creator');
+        res.status(200).json({ message: "Diary created successfully.", data: diary });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -12,7 +13,7 @@ const createDiary = async (req, res) => {
 const getAllDiarys = async (req, res) => {
     console.dir(req.body);
     try{
-        const users = await Diary.find();
+        const users = await Diary.find().populate('creator');
         res.json(users)
     }catch(error){
         res.status(500).json({ error: 'Internal Server Error' });
@@ -22,7 +23,7 @@ const getAllDiarys = async (req, res) => {
 const getDiaryById = async (req, res) => {
     const userId = req.params.id;
     try{
-        const diary = await Diary.findById( userId )
+        const diary = await Diary.findById(userId).populate('creator')
         if(!diary){
             res.status(404).json({error: "Diary is not found!"})
         }
@@ -35,7 +36,7 @@ const getDiaryById = async (req, res) => {
 const updateDiary = async (req, res) => {
     const userId = req.params.id;
     try {
-        const updateDiary = await Diary.findByIdAndUpdate(userId, req.body, { new: true })
+        const updateDiary = await Diary.findByIdAndUpdate(userId, req.body, { new: true }).populate('creator')
         if(!updateDiary){
             res.status(404).json({error: "Diary is not found."})
         }else{
@@ -49,7 +50,7 @@ const updateDiary = async (req, res) => {
 const deleteDiary = async (req, res) => {
     const userId = req.params.id;
     try {
-        const deleteDiary = await Diary.findOneAndDelete(userId);
+        const deleteDiary = await Diary.findOneAndDelete(userId).populate('creator');
         if(!deleteDiary){
             res.status(404).json({ error: "Diary is not found." })
         }else{
