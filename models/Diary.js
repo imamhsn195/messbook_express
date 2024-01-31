@@ -8,7 +8,9 @@ const diarySchema = mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'User',
     required: true
-   }
+   },
+   status: { type: Boolean },
+   attachment: { type: String }
 });
 
 const Diary = mongoose.model("Diary", diarySchema);
