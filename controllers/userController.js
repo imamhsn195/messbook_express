@@ -1,8 +1,11 @@
 const User = require('../models/User');
+const fs = require('fs');
 
 const createUser = async (req, res) => {
+    console.log(req.file)
+    const profile_picture = req.file.destination.substr(7) + req.file.filename;
     try {
-        const user = await User.create(req.body);
+        const user = await User.create({'profile_picture': profile_picture, ...req.body});
         res.status(200).json({ message: "User created successfully.", data: user});
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
@@ -53,10 +56,14 @@ const deleteUser = async (req, res) => {
         if(!deleteUser){
             res.status(404).json({ error: "User is not found." })
         }else{
+            if(deleteUser.profile_picture){
+                fs.unlink(`public/${deleteUser.profile_picture}`, () => {});
+            }
             res.status(200).json({ message: "User is deleted successfully.", data: deleteUser})
         }
+
     } catch (error) {
-        res.status(500).json({error: "Internal server error"})
+        res.status(500).json({error: error})
     }
 }
 
