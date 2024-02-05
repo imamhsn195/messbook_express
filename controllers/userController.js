@@ -2,7 +2,6 @@ const User = require('../models/User');
 const fs = require('fs');
 
 const createUser = async (req, res) => {
-    console.log(req.file)
     const profile_picture = req.file.destination.substr(7) + req.file.filename;
     try {
         const user = await User.create({'profile_picture': profile_picture, ...req.body});
@@ -36,13 +35,29 @@ const getUserById = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
+
     const userId = req.params.id;
+
+    const profile_picture = req.file.destination.substr(7) + req.file.filename;
+
+    const afterUpdateUser = {'profile_picture': profile_picture, ...req.body};
+    
     try {
-        const updateUser = await User.findByIdAndUpdate(userId, req.body, { new: true })
-        if(!updateUser){
-            res.status(404).json({error: "User is not found."})
+        const beforeUpdateUser = await User.findById(userId);
+
+        const old_profile_picture = beforeUpdateUser.profile_picture;
+
+        const updatedUser = await User.findByIdAndUpdate(userId, afterUpdateUser , { new: true })
+
+        if(!updatedUser){
+
+            res.status(404).json({error: "User is not found."});
+
         }else{
-            res.status(200).json({ message: "User is updated successfully.", data: updateUser })
+
+            fs.unlink(`public/${old_profile_picture}`, (error) => { console.log(error); });
+            
+            res.status(200).json({ message: "User is updated successfully.", data: updatedUser })
         }
     } catch (error) {
         res.status(500).json({error: "Internal Server error"})

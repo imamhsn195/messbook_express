@@ -28,7 +28,7 @@ router.get('/:id', userController.getUserById );
 
 router.post('/create', upload.single('profile_picture'), userController.createUser );
 
-router.put('/:id', userController.updateUser );
+router.put('/:id', upload.single('profile_picture'), userController.updateUser );
 
 router.delete('/:id', userController.deleteUser )
 
