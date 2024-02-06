@@ -39,7 +39,7 @@ const updateUser = async (req, res) => {
     const userId = req.params.id;
 
     const profile_picture = req.file.destination.substr(7) + req.file.filename;
-    
+
     const afterUpdateUser = { 'profile_picture': profile_picture, ...req.body };
 
     try {
@@ -63,7 +63,7 @@ const updateUser = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server error" });
-    }
+    } 
 }
 
 const deleteUser = async (req, res) => {
