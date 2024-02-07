@@ -25,9 +25,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const diariesRouter = require('./routes/diaries');
+const authRoutes = require('./routes/auth');
+const protectedRoute = require('./routes/protectedRoute');
+const verifyToken = require('./middleware/authMiddleware');
+
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/diaries', diariesRouter);
+
+app.use('/api/auth', authRoutes);
+app.use('/api/protected', protectedRoute);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

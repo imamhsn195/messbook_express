@@ -2,7 +2,9 @@ const User = require('../models/User');
 const fs = require('fs');
 
 const createUser = async (req, res) => {
-    const profile_picture = req.file.destination.substr(7) + req.file.filename;
+    if(req.file){
+        const profile_picture = req.file.destination.substr(7) + req.file.filename;
+    }
     try {
         const user = await User.create({'profile_picture': profile_picture, ...req.body});
         res.status(200).json({ message: "User created successfully.", data: user});
