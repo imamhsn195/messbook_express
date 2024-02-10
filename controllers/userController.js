@@ -2,14 +2,16 @@ const User = require('../models/User');
 const fs = require('fs');
 
 const createUser = async (req, res) => {
-    if(req.file){
-        const profile_picture = req.file.destination.substr(7) + req.file.filename;
-    }
     try {
-        const user = await User.create({'profile_picture': profile_picture, ...req.body});
+        let profile_picture = '';
+        if(req.file){
+            profile_picture = req.file.destination.substr(7) + req.file.filename;
+        }
+        const user = await User.create({profile_picture: profile_picture, ...req.body});
         res.status(200).json({ message: "User created successfully.", data: user});
     } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.log(error);
+        res.status(500).json({ error: error });
     }
 }
 
