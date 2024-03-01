@@ -16,15 +16,31 @@ const createUser = async (req, res) => {
 }
 
 const getAllUsers = async (req, res) => {
-    const { page, size } = req.query;
-    const pageNumber = parseInt(page, 10) || 1;
-    const pageSize = parseInt(size, 10) || 10;
+    const { page, size, search } = req.query;
+    const pageNumber = parseInt(page, 10);
+    const pageSize = parseInt(size, 10);
 
     try {
         let usersQuery = User.find();
         let totalQuery = User.countDocuments();
+
+        if (search != "") {
+            
+            const regex = new RegExp(search, 'i');
+            usersQuery = usersQuery.or([
+                { username: { $regex: regex } },
+                { email: { $regex: regex } },
+                { phone: { $regex: regex } }
+            ]);
+            totalQuery = totalQuery.or([
+                { username: { $regex: regex } },
+                { email: { $regex: regex } },
+                { phone: { $regex: regex } }
+            ]);
+        }
+
         if (page && size) {
-            const skipUsers = (pageNumber - 1) * pageSize;
+            const skipUsers = pageNumber * pageSize;
             usersQuery = usersQuery.skip(skipUsers).limit(pageSize);
         }
         const [users, totalCount] = await Promise.all([usersQuery.exec(), totalQuery.exec()]);
