@@ -16,14 +16,25 @@ const createUser = async (req, res) => {
 }
 
 const getAllUsers = async (req, res) => {
-    console.dir(req.body);
-    try{
-        const users = await User.find();
-        res.json(users)
-    }catch(error){
+    const { page, size } = req.query;
+    const pageNumber = parseInt(page, 10) || 1;
+    const pageSize = parseInt(size, 10) || 10;
+
+    try {
+        let usersQuery = User.find();
+
+        if (page && size) {
+            const skipUsers = (pageNumber - 1) * pageSize;
+            usersQuery = usersQuery.skip(skipUsers).limit(pageSize);
+        }
+
+        const users = await usersQuery.exec();
+        res.json(users);
+    } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
 
 const getUserById = async (req, res) => {
     const userId = req.params.id;
