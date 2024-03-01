@@ -22,14 +22,13 @@ const getAllUsers = async (req, res) => {
 
     try {
         let usersQuery = User.find();
-
+        let totalQuery = User.countDocuments();
         if (page && size) {
             const skipUsers = (pageNumber - 1) * pageSize;
             usersQuery = usersQuery.skip(skipUsers).limit(pageSize);
         }
-
-        const users = await usersQuery.exec();
-        res.json(users);
+        const [users, totalCount] = await Promise.all([usersQuery.exec(), totalQuery.exec()]);
+        res.json({users, totalCount, totalPages : Math.ceil(totalCount/pageSize), currentPage: pageNumber});
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
